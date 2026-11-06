@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>eTAD Reminder Workflow — Portfolio Demo (fictional data only)</title>
+<style>
+  :root{
+    --navy:#243B55; --accent:#2E7D9A; --laccent:#E3F1F6;
+    --emp:#1E6FB8; --lemp:#E1EEFA; --con:#B8601C; --lcon:#FBE9D6;
+    --green:#C6EFCE; --greentxt:#2e6b2e; --yellow:#FFEB9C; --yellowtxt:#7a5c00;
+    --border:#D6E2EA; --grey:#F3F7FA;
+  }
+  *{box-sizing:border-box;}
+  body{font-family:"Segoe UI",Calibri,Arial,sans-serif;margin:0;background:#eef4f8;color:#222;}
+  .mockup-banner{background:#13303f;color:#fff;text-align:center;padding:7px 10px;font-size:12.5px;font-weight:600;}
+  header{background:var(--navy);color:#fff;padding:14px 24px;}
+  header h1{margin:0;font-size:20px;}
+  header .sub{font-size:12px;color:#cfe3ee;margin-top:3px;}
+  nav{display:flex;background:var(--accent);padding:0 14px;flex-wrap:wrap;}
+  nav button{background:transparent;border:none;color:#fff;padding:12px 15px;font-size:13px;cursor:pointer;border-bottom:3px solid transparent;}
+  nav button.active{background:#1f5f76;font-weight:700;border-bottom:3px solid #fff;}
+  main{padding:18px 24px 6px;max-width:1150px;margin:0 auto;}
+  .view{display:none;} .view.active{display:block;}
+  h2.sectitle{color:var(--navy);font-size:16px;margin:18px 0 10px;border-left:4px solid var(--accent);padding-left:10px;}
+  p.note{font-size:12.5px;color:#555;background:#fff;border:1px solid var(--border);border-radius:8px;padding:10px 14px;}
+  table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--border);border-radius:6px;overflow:hidden;}
+  th{background:var(--navy);color:#fff;font-size:11.5px;padding:8px 10px;text-align:left;}
+  td{padding:8px 10px;border-bottom:1px solid #eee;font-size:12.5px;}
+  .pill{display:inline-block;padding:3px 10px;border-radius:10px;font-size:11px;font-weight:700;}
+  .pill.emp{background:var(--lemp);color:var(--emp);}
+  .pill.con{background:var(--lcon);color:var(--con);}
+  .pill.done{background:var(--green);color:var(--greentxt);}
+  .pill.wait{background:var(--yellow);color:var(--yellowtxt);}
+  /* timeline */
+  .tl{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0;}
+  .tl .t{flex:1;min-width:200px;background:#fff;border:1px solid var(--border);border-top:4px solid var(--accent);border-radius:8px;padding:12px 14px;}
+  .tl .t h4{margin:0 0 5px;font-size:13px;color:var(--navy);}
+  .tl .t p{margin:0;font-size:12px;color:#555;}
+  /* two-track */
+  .tracks{display:flex;gap:14px;flex-wrap:wrap;margin:10px 0;}
+  .track{flex:1;min-width:260px;border-radius:10px;padding:14px 16px;border:2px solid;}
+  .track.e{background:var(--lemp);border-color:var(--emp);}
+  .track.e h3{color:var(--emp);}
+  .track.c{background:var(--lcon);border-color:var(--con);}
+  .track.c h3{color:var(--con);}
+  .track h3{margin:0 0 8px;font-size:14px;}
+  .track ul{margin:0;padding-left:18px;font-size:12.5px;}
+  .track li{margin-bottom:4px;}
+  .draft{background:#fff;border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:8px;padding:12px 14px;margin:10px 0;font-size:12.5px;}
+  .draft .hd{font-size:11px;color:#777;font-family:Consolas,monospace;margin-bottom:6px;}
+  .btn{background:var(--accent);color:#fff;border:none;padding:9px 18px;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;}
+  .btn:hover{background:#1f5f76;}
+  .cards{display:flex;gap:14px;margin:6px 0 14px;flex-wrap:wrap;}
+  .card{background:var(--laccent);border:1px solid var(--border);border-radius:8px;padding:14px 18px;min-width:140px;text-align:center;flex:1;}
+  .card .label{font-size:11px;font-weight:700;color:var(--navy);text-transform:uppercase;}
+  .card .value{font-size:24px;font-weight:800;color:var(--accent);margin-top:4px;}
+  .steps{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0;}
+  .steps .s{flex:1;min-width:150px;background:#fff;border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:12px;}
+  .steps .s b{color:var(--accent);}
+  footer{text-align:center;padding:20px;color:#999;font-size:12px;}
+</style>
+</head>
+<body>
+<div class="mockup-banner">✅ PORTFOLIO DEMO — fictional names, company ("NovaWorks"), hours, emails, and identifiers only. Reconstructs the logic of a real recurring eTAD reminder workflow I built with a Copilot agent and Cowork. No real enterprise data is included.</div>
+<header>
+  <h1>⏱️ eTAD Reminder Workflow</h1>
+  <div class="sub">AI-assisted reminders with human review · employee vs. contractor two-track routing</div>
+</header>
+<nav>
+  <button class="navbtn active" data-view="overview">① Overview</button>
+  <button class="navbtn" data-view="input">② Missing-Hours Report</button>
+  <button class="navbtn" data-view="ai">③ AI Processing &amp; Drafts</button>
+  <button class="navbtn" data-view="routing">④ Two-Track Routing</button>
+  <button class="navbtn" data-view="review">⑤ Human Review &amp; Status</button>
+</nav>
+<main>
+
+  <!-- OVERVIEW -->
+  <section class="view active" id="view-overview">
+    <h2 class="sectitle">How the workflow evolved</h2>
+    <div class="tl">
+      <div class="t"><h4>Process discovery</h4><p>Observed how admins in two directorates handled reminders; synthesized one systematic process with defined targets and standing exceptions.</p></div>
+      <div class="t"><h4>Sept 2026 · Copilot agent</h4><p>Built a reminder agent that worked well and was shared with a peer admin for input.</p></div>
+      <div class="t"><h4>Oct 2026 · Cowork</h4><p>Advanced it in Cowork to generate individualized Outlook drafts and pull in response/status updates.</p></div>
+      <div class="t"><h4>Stakeholder-informed</h4><p>With an engineering-services manager and a peer admin, moved contractor handling to supervisors.</p></div>
+    </div>
+    <h2 class="sectitle">Current two-track logic</h2>
+    <div class="steps">
+      <div class="s"><b>Input</b> — monthly missing-hours report</div>
+      <div class="s"><b>AI prep</b> — read report, verify directory, apply exceptions, build drafts</div>
+      <div class="s"><b>Route</b> — employee vs. contractor</div>
+      <div class="s"><b>Human review</b> — approve before send</div>
+      <div class="s"><b>Update</b> — track responses/status</div>
+    </div>
+    <p class="note"><b>Key design decision:</b> employees receive an individual reminder with their supervisor copied; contractors are <b>not</b> emailed directly — their supervisor receives a summary of the contractor's missing hours to review and handle. Every draft is reviewed by a human before anything sends.</p>
+  </section>
+
+  <!-- INPUT -->
+  <section class="view" id="view-input">
+    <h2 class="sectitle">Missing-Hours Report (fictional)</h2>
+    <p class="note">The recurring trigger: a monthly report of who still owes eTAD hours. Each person is flagged as Employee or Contractor and mapped to a supervisor.</p>
+    <table id="repTable"><thead><tr><th>Name</th><th>Type</th><th>Hours Missing</th><th>Supervisor</th></tr></thead><tbody></tbody></table>
+  </section>
+
+  <!-- AI -->
+  <section class="view" id="view-ai">
+    <h2 class="sectitle">AI-Assisted Processing &amp; Draft Preparation</h2>
+    <p class="note">Reproduces what the Copilot/Cowork step does: read the report, verify each person against the directory, apply standing exceptions, then build individualized Outlook drafts — all staged for review, never auto-sent.</p>
+    <button class="btn" onclick="prepDrafts()">▶ Prepare drafts (simulate Cowork)</button>
+    <div id="draftArea" style="margin-top:12px;"></div>
+  </section>
+
+  <!-- ROUTING -->
+  <section class="view" id="view-routing">
+    <h2 class="sectitle">Two-Track Routing</h2>
+    <div class="tracks">
+      <div class="track e">
+        <h3>👤 Employee path</h3>
+        <ul><li>Individual reminder <b>to the employee</b></li><li><b>Supervisor copied (CC)</b></li><li>Lists the employee's own missing hours</li></ul>
+      </div>
+      <div class="track c">
+        <h3>🧰 Contractor path</h3>
+        <ul><li><b>No direct email to the contractor</b></li><li>Summary sent <b>to the supervisor only</b></li><li>Supervisor reviews and handles the hours</li></ul>
+      </div>
+    </div>
+    <table id="routeTable"><thead><tr><th>Name</th><th>Type</th><th>Routing decision</th><th>Primary recipient</th><th>Copied</th></tr></thead><tbody></tbody></table>
+  </section>
+
+  <!-- REVIEW -->
+  <section class="view" id="view-review">
+    <h2 class="sectitle">Human Review &amp; Status</h2>
+    <div class="cards" id="revCards"></div>
+    <p class="note">Nothing sends automatically. The admin approves each prepared draft; only approved drafts are "sent," after which responses/status are tracked.</p>
+    <table id="revTable"><thead><tr><th>Recipient</th><th>Draft type</th><th>Approve</th><th>Status</th></tr></thead><tbody></tbody></table>
+    <div style="margin-top:12px;"><button class="btn" onclick="sendApproved()">✓ Send approved drafts</button></div>
+  </section>
+
+</main>
+<footer>Portfolio demo — fictional data only. HTML, CSS &amp; vanilla JavaScript. Demonstrates the logic of a real eTAD reminder workflow; contains no real enterprise data.</footer>
+<script>
+const REPORT = [
+  {name:"Alvi, Dana",       type:"Employee",   hours:2.0, sup:"Knowles, Priya", supEmail:"knowlesp@novaworks.example", email:"alvid@novaworks.example"},
+  {name:"Abernathy, Craig", type:"Employee",   hours:1.5, sup:"Knowles, Priya", supEmail:"knowlesp@novaworks.example", email:"abernathc@novaworks.example"},
+  {name:"Hoffmann, Nora",   type:"Employee",   hours:1.0, sup:"James, Walt",    supEmail:"jamesw@novaworks.example",    email:"hoffmannn@novaworks.example"},
+  {name:"Magno, Louis",     type:"Contractor", hours:3.0, sup:"Overton, Jon",   supEmail:"overtonj@novaworks.example",  email:"magnol@novaworks.example"},
+  {name:"Rizvi, Sam",       type:"Contractor", hours:2.5, sup:"Overton, Jon",   supEmail:"overtonj@novaworks.example",  email:"rizvis@novaworks.example"}
+];
+let DRAFTS = [];
+
+function showView(n){
+  document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+  document.querySelectorAll(".navbtn").forEach(b=>b.classList.remove("active"));
+  document.getElementById("view-"+n).classList.add("active");
+  document.querySelector('.navbtn[data-view="'+n+'"]').classList.add("active");
+}
+document.querySelectorAll(".navbtn").forEach(b=>b.addEventListener("click",()=>showView(b.dataset.view)));
+
+function renderReport(){
+  document.querySelector("#repTable tbody").innerHTML = REPORT.map(r=>'<tr><td>'+r.name+'</td><td><span class="pill '+(r.type==="Employee"?"emp":"con")+'">'+r.type+'</span></td><td>'+r.hours.toFixed(1)+'</td><td>'+r.sup+'</td></tr>').join("");
+}
+function renderRouting(){
+  document.querySelector("#routeTable tbody").innerHTML = REPORT.map(r=>{
+    if(r.type==="Employee"){
+      return '<tr><td>'+r.name+'</td><td><span class="pill emp">Employee</span></td><td>Individual reminder</td><td>'+r.name+'</td><td>'+r.sup+' (CC)</td></tr>';
+    }
+    return '<tr><td>'+r.name+'</td><td><span class="pill con">Contractor</span></td><td>Supervisor-only summary</td><td>'+r.sup+'</td><td>— (contractor not emailed)</td></tr>';
+  }).join("");
+}
+function prepDrafts(){
+  DRAFTS = [];
+  // employee drafts (one each, CC supervisor)
+  REPORT.filter(r=>r.type==="Employee").forEach(r=>{
+    DRAFTS.push({to:r.name, toEmail:r.email, cc:r.sup, type:"Employee reminder",
+      body:"Hi "+r.name.split(",")[1].trim()+", our records show "+r.hours.toFixed(1)+" eTAD hours still outstanding. Please enter them by Friday. (Your supervisor "+r.sup+" is copied.)",
+      approved:false, status:"Draft"});
+  });
+  // contractor drafts grouped by supervisor
+  const sups = {};
+  REPORT.filter(r=>r.type==="Contractor").forEach(r=>{ (sups[r.sup]=sups[r.sup]||{email:r.supEmail,items:[]}).items.push(r); });
+  Object.keys(sups).forEach(s=>{
+    const list = sups[s].items.map(i=>i.name+" ("+i.hours.toFixed(1)+" hrs)").join("; ");
+    DRAFTS.push({to:s, toEmail:sups[s].email, cc:"—", type:"Supervisor summary (contractors)",
+      body:"Hi "+s.split(",")[1].trim()+", the following contractors on your team have outstanding eTAD hours to review and handle: "+list+". (Contractors are not emailed directly.)",
+      approved:false, status:"Draft"});
+  });
+  const area = document.getElementById("draftArea");
+  area.innerHTML = '<div class="steps"><div class="s"><b>Read</b> report ✓</div><div class="s"><b>Verify</b> directory ✓</div><div class="s"><b>Apply</b> exceptions ✓</div><div class="s"><b>Build</b> '+DRAFTS.length+' drafts ✓</div></div>' +
+    DRAFTS.map(d=>'<div class="draft"><div class="hd">TO: '+d.toEmail+'   |   CC: '+d.cc+'   |   '+d.type+'</div>'+d.body+'</div>').join("");
+  renderReview();
+}
+function renderReview(){
+  const total=DRAFTS.length, appr=DRAFTS.filter(d=>d.approved).length, sent=DRAFTS.filter(d=>d.status==="Sent").length;
+  document.getElementById("revCards").innerHTML =
+    '<div class="card"><div class="label">Drafts</div><div class="value">'+total+'</div></div>'+
+    '<div class="card"><div class="label">Approved</div><div class="value">'+appr+'</div></div>'+
+    '<div class="card"><div class="label">Sent</div><div class="value">'+sent+'</div></div>';
+  document.querySelector("#revTable tbody").innerHTML = DRAFTS.map((d,i)=>'<tr><td>'+d.to+'</td><td>'+d.type+'</td><td><input type="checkbox" '+(d.approved?"checked":"")+' onchange="DRAFTS['+i+'].approved=this.checked;renderReview()"></td><td><span class="pill '+(d.status==="Sent"?"done":"wait")+'">'+d.status+'</span></td></tr>').join("");
+}
+function sendApproved(){
+  DRAFTS.forEach(d=>{ if(d.approved) d.status="Sent"; });
+  renderReview();
+}
+renderReport(); renderRouting(); renderReview();
+</script>
+</body>
+</html>
